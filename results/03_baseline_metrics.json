@@ -1,0 +1,9 @@
+{
+  "model": "logistic_regression",
+  "cv_roc_auc": 0.6615,
+  "cv_pr_auc": 0.2075,
+  "test_roc_auc": 0.6714,
+  "test_pr_auc": 0.2191,
+  "test_precision_top10": 0.2559,
+  "test_recall_top10": 0.2255
+}
