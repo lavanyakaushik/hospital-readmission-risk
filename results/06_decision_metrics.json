@@ -1,0 +1,177 @@
+{
+  "assumptions": {
+    "cost_readmit": 15000,
+    "cost_per_patient": 200,
+    "effect": 0.2
+  },
+  "break_even_risk": 0.0667,
+  "share_above_break_even": 0.7348,
+  "best_share_called": 0.7811,
+  "call_nobody": false,
+  "near_best_share_called": 0.4863,
+  "best_per_1000": {
+    "called": 781.1,
+    "prevented": 20.9,
+    "net": 157235
+  },
+  "capacity_table": [
+    {
+      "share_called": 0.05,
+      "called_per_1000": 50.0177,
+      "prevented_per_1000": 3.3682,
+      "precision": 0.3367,
+      "recall": 0.1484,
+      "calls_per_readmit_prevented": 14.8498,
+      "cost_per_readmit_prevented": 2969.97,
+      "net_per_1000": 40519.9009,
+      "net_random_per_1000": 7025.6998
+    },
+    {
+      "share_called": 0.1,
+      "called_per_1000": 99.9848,
+      "prevented_per_1000": 5.7149,
+      "precision": 0.2858,
+      "recall": 0.2518,
+      "calls_per_readmit_prevented": 17.4956,
+      "cost_per_readmit_prevented": 3499.115,
+      "net_per_1000": 65725.99,
+      "net_random_per_1000": 14044.2958
+    },
+    {
+      "share_called": 0.2,
+      "called_per_1000": 200.0202,
+      "prevented_per_1000": 9.1944,
+      "precision": 0.2298,
+      "recall": 0.4051,
+      "calls_per_readmit_prevented": 21.7547,
+      "cost_per_readmit_prevented": 4350.9351,
+      "net_per_1000": 97911.2932,
+      "net_random_per_1000": 28095.6954
+    },
+    {
+      "share_called": 0.3,
+      "called_per_1000": 300.0051,
+      "prevented_per_1000": 12.0164,
+      "precision": 0.2003,
+      "recall": 0.5294,
+      "calls_per_readmit_prevented": 24.9663,
+      "cost_per_readmit_prevented": 4993.266,
+      "net_per_1000": 120244.7782,
+      "net_random_per_1000": 42139.9912
+    },
+    {
+      "share_called": 0.486,
+      "called_per_1000": 486.0163,
+      "prevented_per_1000": 15.9106,
+      "precision": 0.1637,
+      "recall": 0.701,
+      "calls_per_readmit_prevented": 30.5467,
+      "cost_per_readmit_prevented": 6109.3452,
+      "net_per_1000": 141455.5202,
+      "net_random_per_1000": 68267.9224
+    },
+    {
+      "share_called": 0.5,
+      "called_per_1000": 499.9747,
+      "prevented_per_1000": 16.1938,
+      "precision": 0.1619,
+      "recall": 0.7135,
+      "calls_per_readmit_prevented": 30.8745,
+      "cost_per_readmit_prevented": 6174.8907,
+      "net_per_1000": 142912.0518,
+      "net_random_per_1000": 70228.5828
+    },
+    {
+      "share_called": 0.781,
+      "called_per_1000": 781.0145,
+      "prevented_per_1000": 20.8871,
+      "precision": 0.1337,
+      "recall": 0.9202,
+      "calls_per_readmit_prevented": 37.3923,
+      "cost_per_readmit_prevented": 7478.4504,
+      "net_per_1000": 157103.1204,
+      "net_random_per_1000": 109704.6332
+    },
+    {
+      "share_called": 1.0,
+      "called_per_1000": 1000.0,
+      "prevented_per_1000": 22.6976,
+      "precision": 0.1135,
+      "recall": 1.0,
+      "calls_per_readmit_prevented": 44.0575,
+      "cost_per_readmit_prevented": 8811.4973,
+      "net_per_1000": 140464.2695,
+      "net_random_per_1000": 140464.2695
+    }
+  ],
+  "bootstrap": {
+    "best_policy": {
+      "net_per_1000": [
+        141688,
+        156754,
+        172065
+      ],
+      "prevented_per_1000": [
+        19.83,
+        20.87,
+        21.89
+      ],
+      "prob_net_positive": 1.0
+    },
+    "top_10pct": {
+      "net_per_1000": [
+        56591,
+        65673,
+        75304
+      ],
+      "prevented_per_1000": [
+        5.03,
+        5.71,
+        6.41
+      ],
+      "prob_net_positive": 1.0
+    }
+  },
+  "sensitivity_best_share": {
+    "$50": {
+      "5%": 0.781,
+      "10%": 0.985,
+      "15%": 0.996,
+      "20%": 0.996,
+      "30%": 0.999,
+      "40%": 0.999
+    },
+    "$100": {
+      "5%": 0.258,
+      "10%": 0.781,
+      "15%": 0.843,
+      "20%": 0.985,
+      "30%": 0.996,
+      "40%": 0.996
+    },
+    "$200": {
+      "5%": 0.063,
+      "10%": 0.258,
+      "15%": 0.613,
+      "20%": 0.781,
+      "30%": 0.843,
+      "40%": 0.985
+    },
+    "$300": {
+      "5%": 0.01,
+      "10%": 0.111,
+      "15%": 0.258,
+      "20%": 0.523,
+      "30%": 0.781,
+      "40%": 0.843
+    },
+    "$500": {
+      "5%": 0.001,
+      "10%": 0.01,
+      "15%": 0.068,
+      "20%": 0.191,
+      "30%": 0.316,
+      "40%": 0.636
+    }
+  }
+}
