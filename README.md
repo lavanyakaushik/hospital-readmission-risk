@@ -1,5 +1,9 @@
 # Hospital Readmission Risk: Who Should a Follow-up Program Call?
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://readmission-planner.streamlit.app)
+
+**Live app:** https://readmission-planner.streamlit.app
+
 Predicts 30-day readmission for diabetic inpatients and turns the scores into a staffing decision: how many discharged patients a follow-up program should call, what it costs, how many readmissions it prevents, and who the policy misses.
 
 **Interactive dashboard (Tableau Public):** [Hospital Readmission Follow-up Planner](https://public.tableau.com/views/HospitalReadmissionFollow-upPlanner/Planner)
