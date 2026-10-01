@@ -8,3 +8,4 @@ shap
 streamlit
 pyarrow
 jupyter
+streamlit

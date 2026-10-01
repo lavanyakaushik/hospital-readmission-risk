@@ -3,6 +3,7 @@ Run from the project folder after notebooks 01-06:  streamlit run app.py
 Uses only the held-out test set, so every score shown is out-of-sample.
 """
 from pathlib import Path
+import altair as alt
 import joblib
 import numpy as np
 import pandas as pd
@@ -59,7 +60,7 @@ N, y = len(test), test[TARGET].to_numpy()
 st.sidebar.header("Program assumptions")
 cost_readmit = st.sidebar.number_input("Cost of one readmission ($)", 1_000, 50_000, 15_000, step=500)
 cost_pp = st.sidebar.number_input("Program cost per patient ($)", 10, 2_000, 200, step=10)
-effect = st.sidebar.slider("Readmissions prevented among patients called", 0.0, 0.5, 0.20, 0.01, format="%.2f")
+effect = st.sidebar.slider("Readmissions prevented among patients called (%)", 0, 50, 20) / 100
 capacity = st.sidebar.slider("Share of discharges the team can call (%)", 1, 100, 10)
 st.sidebar.caption(f"Break-even risk: a patient is worth calling above "
                    f"{cost_pp / max(effect * cost_readmit, 1e-9):.1%} predicted risk.")
@@ -87,8 +88,8 @@ with plan:
 
     if best["net"] > 0:
         st.write(f"With these assumptions, net benefit peaks when **{best['share']:.0%}** of discharges are called "
-                 f"(${best['net'] * scale:,.0f} per 1,000). At your capacity of {capacity}%, each readmission "
-                 f"prevented costs **${cost_pp / (row['precision'] * effect):,.0f}** in program spend.")
+                 f"(\\${best['net'] * scale:,.0f} per 1,000). At your capacity of {capacity}%, each readmission "
+                 f"prevented costs **\\${cost_pp / max(row['precision'] * effect, 1e-9):,.0f}** in program spend.")
     else:
         st.warning("With these assumptions the program costs more than it saves at every size.")
 
@@ -128,9 +129,17 @@ with patient:
             lgbm = model.estimator.estimator          # CalibratedClassifierCV -> FrozenEstimator -> LGBMClassifier
             contrib = pd.Series(lgbm.predict(x, pred_contrib=True)[0][:-1], index=features)
             top = contrib.reindex(contrib.abs().sort_values(ascending=False).index).head(8)
-            st.bar_chart(pd.DataFrame({"Pushes risk up (+) or down (−)": top.values},
-                                      index=[f"{f} = {x.iloc[0][f]}" for f in top.index]), horizontal=True)
-            st.caption("SHAP contributions from the underlying LightGBM model, in log-odds.")
+            plot = pd.DataFrame({"feature": [f"{f} = {x.iloc[0][f]}" for f in top.index], "contribution": top.values})
+            plot["direction"] = np.where(plot["contribution"] > 0, "Raises risk", "Lowers risk")
+            st.altair_chart(
+                alt.Chart(plot).mark_bar().encode(
+                    x=alt.X("contribution:Q", title="Contribution to risk (log-odds)"),
+                    y=alt.Y("feature:N", sort="-x", title=None, axis=alt.Axis(labelLimit=320)),
+                    color=alt.Color("direction:N", title=None,
+                                    scale=alt.Scale(domain=["Raises risk", "Lowers risk"], range=["#c1666b", "#2a6f97"])),
+                    tooltip=["feature", alt.Tooltip("contribution:Q", format=".3f")]),
+                width="stretch")
+            st.caption("SHAP contributions from the underlying LightGBM model: the 8 features that move this score most.")
         except Exception as e:
             st.info(f"Contributions unavailable for this model ({type(e).__name__}).")
 
