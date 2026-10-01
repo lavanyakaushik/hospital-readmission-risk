@@ -1,5 +1,7 @@
 """Readmission follow-up planner (Streamlit).
-Run from the project folder after notebooks 01-06:  streamlit run app.py
+Run from the project folder:  streamlit run app.py
+Reads tableau/app_scored.parquet (written by notebook 07 and committed, so the app also runs on
+Streamlit Community Cloud); falls back to data/processed when that file is missing.
 Uses only the held-out test set, so every score shown is out-of-sample.
 """
 from pathlib import Path
@@ -9,7 +11,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-PROC, MOD = Path("data/processed"), Path("models")
+PROC, MOD, APP_DATA = Path("data/processed"), Path("models"), Path("tableau/app_scored.parquet")
 TARGET, ID = "readmit_30", "patient_nbr"
 WHAT_IF = ["discharge_disposition_id", "number_inpatient", "number_emergency",
            "number_outpatient", "time_in_hospital", "num_medications"]
@@ -19,11 +21,17 @@ st.set_page_config(page_title="Readmission follow-up planner", page_icon="🏥",
 
 @st.cache_resource
 def load_model():
-    return joblib.load(MOD / "lgbm_calibrated.joblib")
+    try:
+        return joblib.load(MOD / "lgbm_calibrated.joblib")
+    except Exception:                      # missing file or library-version mismatch
+        return None
 
 
 @st.cache_data
 def load_test():
+    if APP_DATA.exists():
+        test = pd.read_parquet(APP_DATA)
+        return rank(test)
     pred = pd.read_parquet(PROC / "test_predictions.parquet")
     df = pd.read_parquet(PROC / "model_table.parquet")
     test_ids = set(pd.read_parquet(PROC / "test_patients.parquet")[ID])
@@ -31,6 +39,10 @@ def load_test():
     if len(test) != len(pred) or not (test[ID].values == pred[ID].values).all():
         raise ValueError("Test rows don't line up with test_predictions.parquet. Rerun notebook 04.")
     test["p_risk"] = pred["p_risk"].values
+    return rank(test)
+
+
+def rank(test):
     test = test.sort_values("p_risk", ascending=False, kind="stable").reset_index(drop=True)
     test["rank"] = np.arange(1, len(test) + 1)
     test["risk_percentile"] = 100 * (1 - (test["rank"] - 1) / len(test))
@@ -50,7 +62,7 @@ def policy_curve(y, cost_readmit, cost_pp, effect):
 try:
     test, model = load_test(), load_model()
 except FileNotFoundError as e:
-    st.error(f"Missing file: {e.filename}. Run notebooks 01 to 04 first, then start the app from the project folder.")
+    st.error(f"Missing file: {e.filename}. Run notebooks 01 to 07 first, then start the app from the project folder.")
     st.stop()
 
 features = [c for c in test.columns if c not in (TARGET, ID, "p_risk", "rank", "risk_percentile")]
@@ -122,6 +134,9 @@ with patient:
     c.metric("On the call list?", "Yes" if r <= k else "No")
     st.caption(f"Actual outcome in the test data: {'readmitted within 30 days' if rec[TARGET] == 1 else 'not readmitted'}.")
 
+    if model is None:
+        st.info("Score drivers and what-if re-scoring need the saved model, which could not be loaded here.")
+        st.stop()
     left, right = st.columns(2)
     with left:
         st.subheader("What drives this score")
